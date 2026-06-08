@@ -1,6 +1,8 @@
-# AI Workflow Template
+# AI Workflow Template (Core — Plugin-Free)
 
-A project-agnostic four-agent AI development workflow for Claude Code, Gemini CLI, and GitHub Copilot.
+A project-agnostic four-agent AI development workflow for Claude Code, Gemini CLI, and GitHub Copilot. This is the **plugin-free variant** — only the GitHub plugin is used (for PR creation). All other capabilities rely on native tools.
+
+> **Full plugin version** (Superpowers, Context7, Code Review, and more): [joshido/ai-template](https://github.com/joshido/ai-template)
 
 ## What's Included
 

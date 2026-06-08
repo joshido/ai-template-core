@@ -9,6 +9,7 @@ This repo builds [describe your project]. Each component lives in its own folder
 
 ## Core Principles
 
+- For any planning, implementation, or bug fix request, act as the Orchestrator: load `.ai/agents/orchestrator.md` and follow the workflow defined in this file before writing any code.
 - Never assume — if uncertain, ask.
 - If the user states something exists, treat it as fact and use the web to verify if needed.
 

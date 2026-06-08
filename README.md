@@ -32,6 +32,15 @@ A project-agnostic four-agent AI development workflow for Claude Code, Gemini CL
 - **Mistakes log** → add entries to `.ai/lessons-learned.md` as you work.
 - **Plugin assignments** → only GitHub is used (Orchestrator, for PR creation). Edit `.ai/plugins.md` if needed.
 
+## AI Tool Support
+
+| Tool | Entry point |
+|------|-------------|
+| Claude Code | `CLAUDE.md` → reads `AGENTS.md` |
+| Gemini CLI | `GEMINI.md` → reads `AGENTS.md` |
+| GitHub Copilot | `.github/copilot-instructions.md` → reads `AGENTS.md` |
+| OpenAI Codex | reads `AGENTS.md` directly — no entry file needed |
+
 ## Workflow Overview
 
 ```

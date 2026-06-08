@@ -89,7 +89,7 @@ Do not loop indefinitely. Escalate and wait.
 
 - Each feature gets its own branch: `feat/<feature-name>`
 - Each bug fix gets its own branch: `fix/<short-description>`
-- Never push directly to `main`
+- Never push directly to `main` — this applies to all changes, including documentation
 - A PR is created when a feature reaches a shippable milestone or is complete — not per task
 - Branch naming uses kebab-case
 

@@ -16,13 +16,3 @@ Recorded mistakes and how to avoid them. Read this before starting any task.
 
 ---
 -->
-
-## 1. Pushed docs changes directly to main without a PR
-
-**What happened:** Small documentation updates (AGENTS.md and README.md) were committed and pushed directly to `main` on both repos, bypassing branch protection and the PR requirement.
-
-**Fix applied:** None — changes were already merged and user accepted the state.
-
-**How to avoid:** All changes, including docs, must go through a feature branch and PR. No exceptions, regardless of how small the change is.
-
----

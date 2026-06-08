@@ -12,7 +12,7 @@ A project-agnostic four-agent AI development workflow for Claude Code, Gemini CL
 | `.github/copilot-instructions.md` | GitHub Copilot entry point → reads AGENTS.md |
 | `.ai/agents/` | Agent role definitions (orchestrator, tester, developer, reviewer) |
 | `.ai/plan-template.md` | Required format for presenting implementation plans |
-| `.ai/plugins.md` | Plugin assignments per agent |
+| `.ai/plugins.md` | GitHub plugin assignment (Orchestrator only) |
 | `.ai/lessons-learned.md` | Running log of mistakes and how to avoid them |
 | `.claude/settings.json` | Claude Code configuration (permissions, model, hooks) |
 
@@ -28,7 +28,7 @@ A project-agnostic four-agent AI development workflow for Claude Code, Gemini CL
 - **Workflow changes** → edit `AGENTS.md` only. The three tool entry files automatically inherit it.
 - **Agent behavior** → edit the relevant file in `.ai/agents/`.
 - **Mistakes log** → add entries to `.ai/lessons-learned.md` as you work.
-- **Plugin assignments** → edit `.ai/plugins.md`.
+- **Plugin assignments** → only GitHub is used (Orchestrator, for PR creation). Edit `.ai/plugins.md` if needed.
 
 ## Workflow Overview
 

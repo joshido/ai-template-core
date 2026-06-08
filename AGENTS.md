@@ -145,6 +145,6 @@ Agent definitions live in `.ai/agents/`. Each agent is loaded only when needed:
 - `.ai/agents/developer.md` — implements tasks and makes tests pass
 - `.ai/agents/reviewer.md` — reviews code quality, correctness, and security
 
-Plugin assignments are in `.ai/plugins.md`.
+The only plugin used is **GitHub** (Orchestrator only), for PR creation. All other capabilities use native tools.
 
 Recorded mistakes and how to avoid them are in `.ai/lessons-learned.md`. Read it before starting any task.

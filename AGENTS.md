@@ -92,6 +92,7 @@ Do not loop indefinitely. Escalate and wait.
 - Never push directly to `main` — this applies to all changes, including documentation
 - A PR is created when a feature reaches a shippable milestone or is complete — not per task
 - Branch naming uses kebab-case
+- Do not schedule check-ins, reminders, or recurring routines to monitor a PR. Subscribing to PR activity events (reviews, comments, CI) is fine; act on those events as they arrive.
 
 ---
 
@@ -128,12 +129,17 @@ When dispatching subagents, always pass the `model` parameter explicitly. Use th
 
 | Role | Default Model | Upgrade Path |
 |---|---|---|
-| Tester | `haiku` | → `sonnet` if BDD scenarios are complex or failing review |
-| Developer | `haiku` | → `sonnet` if BLOCKED after 3 attempts |
-| Reviewer | `haiku` | → `sonnet` for deep security or architectural review |
-| Orchestrator | `sonnet` | (Always Sonnet for coordination and planning) |
+| Orchestrator | `opus` | (Always Opus for coordination and planning) |
+| Tester | `sonnet` | → `opus` if BDD scenarios are complex or failing review (requires user permission) |
+| Developer | `sonnet` | → `opus` if BLOCKED after 3 attempts (requires user permission) |
+| Reviewer | `sonnet` | → `opus` for deep security or architectural review (requires user permission) |
+| Tool Caller | `haiku` | → `sonnet` if the request fails or returns unusable output |
 
-**Opus Escalation:** If a task remains blocked even after escalating to `sonnet`, the Orchestrator must ask the user for permission before using `opus` for a specific task.
+Models are referenced by alias only (`opus`, `sonnet`, `haiku`), never by a pinned version ID. Aliases resolve to the latest release of each model family on the Anthropic API, so agents pick up new versions automatically. To pin a version locally, set `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, or `ANTHROPIC_DEFAULT_HAIKU_MODEL` in your environment instead of editing these files.
+
+**Opus Escalation:** If a Tester, Developer, or Reviewer task remains blocked on `sonnet`, the Orchestrator must ask the user for permission before using `opus` for that specific task.
+
+**Tool Caller Delegation:** Mechanical, judgment-free tool calls (file reads/searches, running test/lint/security commands, doc lookups via WebSearch/WebFetch) should be delegated to the Tool Caller on `haiku` to keep costs low.
 
 ---
 
@@ -145,6 +151,7 @@ Agent definitions live in `.ai/agents/`. Each agent is loaded only when needed:
 - `.ai/agents/tester.md` — writes BDD tests before implementation
 - `.ai/agents/developer.md` — implements tasks and makes tests pass
 - `.ai/agents/reviewer.md` — reviews code quality, correctness, and security
+- `.ai/agents/tool-caller.md` — executes mechanical tool calls and returns raw results
 
 The only plugin used is **GitHub** (Orchestrator only), for PR creation. All other capabilities use native tools.
 

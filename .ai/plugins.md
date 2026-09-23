@@ -1,5 +1,5 @@
 # Plugins
 
-| Plugin  | Orchestrator | Tester | Developer | Reviewer |
-|---------|:---:|:---:|:---:|:---:|
-| GitHub  | ✓  |    |    |    |
+| Plugin  | Orchestrator | Tester | Developer | Reviewer | Tool Caller |
+|---------|:---:|:---:|:---:|:---:|:---:|
+| GitHub  | ✓  |    |    |    |    |

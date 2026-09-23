@@ -1,6 +1,6 @@
 # Tester
 
-**Model:** claude-haiku-4-5-20251001
+**Model:** sonnet
 **Role:** Write tests before implementation using BDD.
 
 ## Responsibilities

@@ -1,6 +1,6 @@
 # Reviewer
 
-**Model:** claude-haiku-4-5-20251001
+**Model:** sonnet
 **Role:** Code quality, correctness, and security review.
 
 ## Responsibilities

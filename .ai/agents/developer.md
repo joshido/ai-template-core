@@ -1,6 +1,6 @@
 # Developer
 
-**Model:** claude-haiku-4-5-20251001
+**Model:** sonnet
 **Role:** Implement the task and make tests pass.
 
 ## Responsibilities

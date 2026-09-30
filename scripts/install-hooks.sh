@@ -5,7 +5,8 @@
 # so session-start hooks don't add it to the model's context.
 set -eu
 
-root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
+# Not a git repository yet (e.g. a fresh template copy): nothing to do.
+root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel 2>/dev/null) || exit 0
 current=$(git -C "$root" config --get core.hooksPath || true)
 
 [ "$current" = .githooks ] && exit 0

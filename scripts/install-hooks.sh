@@ -1,7 +1,8 @@
 #!/bin/sh
 # Point git at .githooks so the pre-commit sync runs. Never overwrites an
 # existing hook setup: if another hooks path or custom hooks exist, it prints
-# how to add .githooks/pre-commit to them instead.
+# how to add .githooks/pre-commit to them instead. All output goes to stderr
+# so session-start hooks don't add it to the model's context.
 set -eu
 
 root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
@@ -25,4 +26,4 @@ for f in "$hooks"/*; do
 done
 
 git -C "$root" config core.hooksPath .githooks
-echo "Enabled git hooks in .githooks"
+echo "Enabled git hooks in .githooks" >&2

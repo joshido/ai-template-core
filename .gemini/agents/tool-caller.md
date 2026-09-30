@@ -1,6 +1,7 @@
 ---
 name: tool-caller
 description: Runs well-defined, high-output mechanical tool calls (test, lint and security runs, wide searches, doc lookups) and returns a compact result. No decisions.
+model: flash
 tools:
   - run_shell_command
   - read_file

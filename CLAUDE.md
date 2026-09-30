@@ -47,7 +47,7 @@ Subagents are defined in `.claude/agents/` and generated for Gemini CLI (`.gemin
 | `reviewer` | `sonnet` | Spec, quality and security review | `opus` for deep security/architecture review, with user permission |
 | `tool-caller` | `haiku` | Mechanical, high-output tool calls | `sonnet` if output is unusable |
 
-- Always pass `model` explicitly when dispatching a subagent.
+- Each agent file sets its model per tool (`model`, `gemini-model`, `copilot-model`). In Claude Code, also pass `model` explicitly when dispatching.
 - Use the Tool Caller only for high-output work (test/lint/scan runs, wide searches). Do single file reads and greps yourself.
 - The only plugin is **GitHub** (Orchestrator, for PRs). Everything else uses native tools.
 

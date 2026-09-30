@@ -30,8 +30,9 @@ agent_sources() {
 }
 
 # Convert a Claude Code subagent (stdin) to another tool's format.
-# Keeps name, description and tools (mapped to the target's tool names);
-# drops Claude-only fields such as model, so the target uses its own default.
+# Keeps name, description and tools (mapped to the target's tool names).
+# The model comes from gemini-model: or copilot-model: in the source; Claude's
+# own model: is dropped. Without one, the target uses its default model.
 convert_agent() { # $1 = gemini | copilot, $2 = source path
   awk -v fmt="$1" -v source="$2" -v script="$script" '
     function trim(s) { gsub(/^[ \t"]+|[ \t"]+$/, "", s); return s }
@@ -52,6 +53,7 @@ convert_agent() { # $1 = gemini | copilot, $2 = source path
       if (++fm == 2) {
         print "---"
         for (i = 1; i <= n; i++) print keep[i]
+        if (model != "") print "model: " model
         if (tools != "") {
           count = split(tools, list, ",")
           line = ""
@@ -74,6 +76,7 @@ convert_agent() { # $1 = gemini | copilot, $2 = source path
     fm == 1 {
       if ($0 ~ /^(name|description):/) keep[++n] = $0
       else if ($0 ~ /^tools:/) tools = substr($0, 7)
+      else if ($0 ~ "^" fmt "-model:") { model = $0; sub(/^[a-z]+-model:[ \t]*/, "", model) }
       next
     }
     { print }

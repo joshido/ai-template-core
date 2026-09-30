@@ -1,0 +1,14 @@
+#!/bin/sh
+# Block pushing fixup!/squash!/amend! commits: autosquash them first.
+set -eu
+
+check="$(git rev-parse --show-toplevel)/scripts/check-no-fixups.sh"
+while read -r _ local_sha _ remote_sha; do
+  case $local_sha in *[!0]*) ;; *) continue ;; esac  # branch deletion
+  if case $remote_sha in *[!0]*) true ;; *) false ;; esac && git cat-file -e "$remote_sha" 2>/dev/null; then
+    "$check" "$remote_sha..$local_sha"
+  else
+    # New branch, or remote commit unknown locally: check what no remote has.
+    "$check" "$local_sha" --not --remotes
+  fi
+done

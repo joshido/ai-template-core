@@ -20,13 +20,16 @@ A project-agnostic four-agent AI development workflow for Claude Code, Gemini CL
 | `.github/hooks/install-hooks.json` | Copilot cloud agent and CLI sessionStart hook; runs `install-hooks.sh` |
 | `scripts/sync-agent-files.sh` | Regenerates `CLAUDE.md`, `GEMINI.md` and the Gemini/Copilot agents |
 | `.githooks/pre-commit` | Runs the sync script on every commit; blocks commits that edit a generated file by hand |
+| `.githooks/pre-push` | Blocks pushing unsquashed `fixup!`/`squash!`/`amend!` commits |
+| `scripts/check-no-fixups.sh` | Fixup check shared by the pre-push hook and CI |
 | `scripts/install-hooks.sh` | Enables `.githooks` without overwriting an existing hook setup |
 | `.github/workflows/agent-files.yml` | CI check that all generated files are in sync |
+| `.github/workflows/commits.yml` | CI check that a PR has no unsquashed fixup commits |
 
 ## How to Use
 
 1. Copy all files into the root of your new repository.
-2. Enable the git hooks once per clone: `scripts/install-hooks.sh`. Claude Code, Gemini CLI, and Copilot's cloud agent and CLI run it at session start (Gemini asks you to trust the project hook the first time; Copilot's hook is bash-only, so on Windows run the script yourself). It never overwrites an existing `core.hooksPath` or custom hooks; if you have them, it tells you to call `.githooks/pre-commit` from your own pre-commit hook.
+2. Enable the git hooks once per clone: `scripts/install-hooks.sh`. Claude Code, Gemini CLI, and Copilot's cloud agent and CLI run it at session start (Gemini asks you to trust the project hook the first time; Copilot's hook is bash-only, so on Windows run the script yourself). It never overwrites an existing `core.hooksPath` or custom hooks; if you have them, it tells you to call `.githooks/pre-commit` and `.githooks/pre-push` from your own hooks.
 3. Replace the `<!-- CUSTOMIZE -->` section in `AGENTS.md` with a description of your project, then commit — `CLAUDE.md` and `GEMINI.md` are regenerated.
 4. Add your permissions and preferences to `.claude/settings.json`.
 5. Delete this README or replace it with your project README.

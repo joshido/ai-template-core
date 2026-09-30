@@ -19,7 +19,7 @@ This repo builds [describe your project]. Each component lives in its own folder
 
 Plan approved → per task: Tester → Developer → Reviewer → commit → next task. One PR per shippable feature.
 
-1. **Plan.** Read `.ai/lessons-learned.md`. Detect the stack and its test, lint and security commands. Use WebSearch or WebFetch for library docs. Present the plan using `.ai/plan-template.md` and wait for approval.
+1. **Plan.** Read `.ai/lessons-learned.md`. Detect the stack and its test, lint and security commands. Search the web for library docs. Present the plan using `.ai/plan-template.md` and wait for approval.
 2. **Test.** Send the Tester the task, stack and test command. Send weak or off-target tests back to the Tester.
 3. **Implement.** Send the Developer the approved tests, stack and test command. Confirm the test run passes; if not, or if it deviates from the plan, send it back.
 4. **Review.** Send the Reviewer the task, the diff, and the lint and security commands. Have the Developer fix valid findings, then re-run the review. Reject noise.

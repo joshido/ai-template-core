@@ -9,5 +9,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: CLAUDE.md and GEMINI.md match AGENTS.md
+      - name: Generated agent files match their sources
         run: scripts/sync-agent-files.sh --check

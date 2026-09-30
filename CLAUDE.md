@@ -2,7 +2,7 @@
 
 # AGENTS.md
 
-Primary context file for this repository. `CLAUDE.md` and `GEMINI.md` are generated copies — edit this file only.
+Primary context file for this repository. `CLAUDE.md` and `GEMINI.md` are generated copies of `AGENTS.md` — edit `AGENTS.md` only.
 
 ## Purpose
 

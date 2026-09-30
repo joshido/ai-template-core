@@ -3,7 +3,10 @@
 # Usage: check-no-fixups.sh <git log revision args>, e.g. origin/main..HEAD
 set -eu
 
-found=$(git log --format='%h %s' "$@" | grep -E '^[0-9a-f]+ (fixup|squash|amend)! ' || true)
+root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
+# Run git on its own so a bad range or repo fails the check instead of passing.
+log=$(git -C "$root" log --format='%h %s' "$@")
+found=$(printf '%s\n' "$log" | grep -E '^[0-9a-f]+ (fixup|squash|amend)! ' || true)
 [ -z "$found" ] && exit 0
 
 echo "Unsquashed fixup commits:" >&2

@@ -1,6 +1,6 @@
 # AI Workflow Template (Core — Plugin-Free)
 
-A project-agnostic four-agent AI development workflow for Claude Code, Gemini CLI, and GitHub Copilot. This is the **plugin-free variant** — only the GitHub plugin is used (for PR creation). All other capabilities rely on native tools.
+A project-agnostic four-agent AI development workflow for Claude Code, Gemini CLI, GitHub Copilot and OpenAI Codex. This is the **plugin-free variant**: only the GitHub plugin is used (for PR creation); everything else uses native tools.
 
 > **Full plugin version** (Superpowers, Context7, Code Review, and more): [joshido/ai-template](https://github.com/joshido/ai-template)
 
@@ -8,53 +8,42 @@ A project-agnostic four-agent AI development workflow for Claude Code, Gemini CL
 
 | File | Purpose |
 |------|---------|
-| `AGENTS.md` | Single source of truth — workflow rules, agent definitions, conventions |
-| `CLAUDE.md` | Claude Code entry point → reads AGENTS.md |
-| `GEMINI.md` | Gemini CLI entry point → reads AGENTS.md |
-| `.github/copilot-instructions.md` | GitHub Copilot entry point → reads AGENTS.md |
-| `.ai/agents/` | Agent role definitions (orchestrator, tester, developer, reviewer) |
+| `AGENTS.md` | Single source of truth — workflow, Orchestrator role, conventions |
+| `CLAUDE.md`, `GEMINI.md` | Generated copies of `AGENTS.md` — never edit by hand |
+| `.claude/agents/` | Subagents: tester, developer, reviewer, tool-caller |
 | `.ai/plan-template.md` | Required format for presenting implementation plans |
-| `.ai/plugins.md` | GitHub plugin assignment (Orchestrator only) |
-| `.ai/lessons-learned.md` | Running log of mistakes and how to avoid them |
-| `.claude/settings.json` | Claude Code configuration (permissions, model, hooks) |
+| `.ai/lessons-learned.md` | Short log of mistakes and how to avoid them |
+| `.ai/session-notes.md` | Orchestrator notes for the current feature (created on first use) |
+| `.claude/settings.json` | Claude Code settings; its SessionStart hook turns on the git hooks |
+| `scripts/sync-agent-files.sh` | Regenerates `CLAUDE.md` and `GEMINI.md` from `AGENTS.md` |
+| `.githooks/pre-commit` | Runs the sync script on every commit |
+| `.github/workflows/agent-files.yml` | CI check that the generated files are in sync |
 
 ## How to Use
 
-1. Copy all files from this folder into the root of your new repository.
-2. Open `AGENTS.md` and replace the `<!-- CUSTOMIZE -->` section in **Purpose** with a description of your project.
-3. Populate `.claude/settings.json` with your Claude Code permissions and preferences.
-4. Delete this README or replace it with your project README.
+1. Copy all files into the root of your new repository.
+2. Enable the git hooks once per clone: `git config core.hooksPath .githooks`. Claude Code does this automatically at session start.
+3. Replace the `<!-- CUSTOMIZE -->` section in `AGENTS.md` with a description of your project, then commit — `CLAUDE.md` and `GEMINI.md` are regenerated.
+4. Add your permissions and preferences to `.claude/settings.json`.
+5. Delete this README or replace it with your project README.
 
 ## Customization
 
-- **Workflow changes** → edit `AGENTS.md` only. The three tool entry files automatically inherit it.
-- **Agent behavior** → edit the relevant file in `.ai/agents/`.
-- **Mistakes log** → add entries to `.ai/lessons-learned.md` as you work.
-- **Plugin assignments** → only GitHub is used (Orchestrator, for PR creation). Edit `.ai/plugins.md` if needed.
+- **Workflow** → edit `AGENTS.md` only. Run `scripts/sync-agent-files.sh` (or just commit) to update the copies.
+- **Agent behavior** → edit the file in `.claude/agents/`.
+- **Models** → agents use aliases (`opus`, `sonnet`, `haiku`) that resolve to the latest release. To pin a version, set `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL` or `ANTHROPIC_DEFAULT_HAIKU_MODEL` in your environment.
 
 ## AI Tool Support
 
-| Tool | Entry point |
-|------|-------------|
-| Claude Code | `CLAUDE.md` → reads `AGENTS.md` |
-| Gemini CLI | `GEMINI.md` → reads `AGENTS.md` |
-| GitHub Copilot | `.github/copilot-instructions.md` → reads `AGENTS.md` |
-| OpenAI Codex | reads `AGENTS.md` directly — no entry file needed |
+| Tool | Reads |
+|------|-------|
+| Claude Code | `CLAUDE.md` + `.claude/agents/` |
+| Gemini CLI | `GEMINI.md` |
+| GitHub Copilot | `AGENTS.md` |
+| OpenAI Codex | `AGENTS.md` |
 
 ## Workflow Overview
 
 ```
-User approves plan
-       ↓
-Orchestrator breaks into tasks
-       ↓
-Tester writes BDD tests
-       ↓
-Developer implements until tests pass
-       ↓
-Reviewer checks quality + security
-       ↓
-Orchestrator commits → next task
+Plan approved → Tester → Developer → Reviewer → commit → next task → PR
 ```
-
-All workflow updates belong in `AGENTS.md`.

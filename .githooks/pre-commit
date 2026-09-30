@@ -1,0 +1,6 @@
+#!/bin/sh
+# Keep CLAUDE.md and GEMINI.md in sync with the staged AGENTS.md.
+set -eu
+root=$(git rev-parse --show-toplevel)
+"$root/scripts/sync-agent-files.sh" --staged
+git -C "$root" add CLAUDE.md GEMINI.md

@@ -5,13 +5,15 @@
 # Usage: sync-agent-files.sh [--check | --staged]
 #   --check   exit 1 if a generated file is missing, stale or out of date (for CI)
 #   --staged  read sources from the index and stage the results (for the pre-commit hook)
+# Refuses to overwrite a generated file that was edited by hand.
 set -eu
 
 mode=${1:-}
 root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 script=scripts/sync-agent-files.sh
 out=$(mktemp -d)
-trap 'rm -rf "$out"' EXIT
+scratch=$(mktemp -d)
+trap 'rm -rf "$out" "$scratch"' EXIT
 
 # Print a source file from the index (--staged) or the working tree.
 src() {
@@ -99,10 +101,53 @@ for a in $(agent_sources); do
   src "$a" | convert_agent copilot "$a" > "$out/.github/agents/${name%.md}.agent.md"
 done
 
+# The source a generated file is built from.
+source_of() {
+  case $1 in
+    .gemini/agents/*) echo ".claude/agents/${1##*/}" ;;
+    .github/agents/*) n=${1##*/}; echo ".claude/agents/${n%.agent.md}.md" ;;
+    *) echo AGENTS.md ;;
+  esac
+}
+
+# Save a git object (e.g. ":path", "HEAD:path") to $2, or remove $2 if absent.
+blob() { git -C "$root" show "$1" > "$2" 2>/dev/null || rm -f "$2"; }
+
+# True if both files are missing, or both exist with equal content.
+same() {
+  if [ -e "$1" ] || [ -e "$2" ]; then cmp -s "$1" "$2"; fi
+}
+
+# True if a generated file has an edit that regenerating would throw away:
+# an unstaged edit (working tree differs from both the index and the new
+# output) or a staged one (index differs from both HEAD and the new output).
+hand_edited() {
+  blob ":$1" "$scratch/index"
+  blob "HEAD:$1" "$scratch/head"
+  if [ -e "$root/$1" ] && ! same "$root/$1" "$out/$1" && ! same "$root/$1" "$scratch/index"; then
+    return 0
+  fi
+  [ -e "$scratch/index" ] && ! same "$scratch/index" "$out/$1" && ! same "$scratch/index" "$scratch/head"
+}
+
+generated=$(cd "$out" && find . -type f | sed 's|^\./||' | sort)
+
+if [ "$mode" != --check ]; then
+  edited=0
+  for f in $generated; do
+    if hand_edited "$f"; then
+      echo "$f is generated from $(source_of "$f") and was edited by hand." >&2
+      echo "  Move the change to $(source_of "$f"), then undo it here: git checkout HEAD -- $f" >&2
+      edited=1
+    fi
+  done
+  [ $edited = 0 ] || exit 1
+fi
+
 status=0
 
 # Write or check each generated file.
-for f in $(cd "$out" && find . -type f | sed 's|^\./||' | sort); do
+for f in $generated; do
   cmp -s "$out/$f" "$root/$f" && continue
   if [ "$mode" = --check ]; then
     echo "$f is out of date. Run $script" >&2

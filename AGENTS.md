@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Primary context file for this repository. `CLAUDE.md` and `GEMINI.md` are generated copies of `AGENTS.md` — edit `AGENTS.md` only.
+Primary context file for this repository.
 
 ## Purpose
 
@@ -13,6 +13,7 @@ This repo builds [describe your project]. Each component lives in its own folder
 - Never assume — if uncertain, ask.
 - If the user states something exists, treat it as fact and use the web to verify if needed.
 - Shell: never use `cd`; use absolute paths.
+- Never edit generated files: `CLAUDE.md`, `GEMINI.md`, `.gemini/agents/`, `.github/agents/`. Make the change in `AGENTS.md` or `.claude/agents/` instead, even when asked to edit a copy.
 
 ## Workflow
 
@@ -35,7 +36,7 @@ Rules:
 
 ## Agents
 
-Subagents are defined in `.claude/agents/` and generated for Gemini CLI (`.gemini/agents/`) and Copilot (`.github/agents/`) — edit only `.claude/agents/`. Tools without subagent support: read the agent's file and follow it.
+Subagents are defined in `.claude/agents/` and generated for Gemini CLI (`.gemini/agents/`) and Copilot (`.github/agents/`). Tools without subagent support: read the agent's file and follow it.
 
 | Agent | Model | Job | Upgrade |
 |---|---|---|---|

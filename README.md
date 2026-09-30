@@ -19,7 +19,7 @@ A project-agnostic four-agent AI development workflow for Claude Code, Gemini CL
 | `.gemini/settings.json` | Gemini CLI settings; same SessionStart hook |
 | `.github/hooks/install-hooks.json` | Copilot cloud agent and CLI sessionStart hook; runs `install-hooks.sh` |
 | `scripts/sync-agent-files.sh` | Regenerates `CLAUDE.md`, `GEMINI.md` and the Gemini/Copilot agents |
-| `.githooks/pre-commit` | Runs the sync script on every commit |
+| `.githooks/pre-commit` | Runs the sync script on every commit; blocks commits that edit a generated file by hand |
 | `scripts/install-hooks.sh` | Enables `.githooks` without overwriting an existing hook setup |
 | `.github/workflows/agent-files.yml` | CI check that all generated files are in sync |
 

@@ -37,7 +37,7 @@ Rules:
 
 ## Agents
 
-Subagents live in `.claude/agents/`. Tools without subagent support: read the agent's file and follow it.
+Subagents are defined in `.claude/agents/` and generated for Gemini CLI (`.gemini/agents/`) and Copilot (`.github/agents/`) — edit only `.claude/agents/`. Tools without subagent support: read the agent's file and follow it.
 
 | Agent | Model | Job | Upgrade |
 |---|---|---|---|

@@ -15,15 +15,16 @@ A project-agnostic four-agent AI development workflow for Claude Code, Gemini CL
 | `.ai/plan-template.md` | Required format for presenting implementation plans |
 | `.ai/lessons-learned.md` | Short log of mistakes and how to avoid them |
 | `.ai/session-notes.md` | Orchestrator notes for the current feature (created on first use) |
-| `.claude/settings.json` | Claude Code settings; its SessionStart hook turns on the git hooks |
+| `.claude/settings.json` | Claude Code settings; its SessionStart hook runs `install-hooks.sh` |
 | `scripts/sync-agent-files.sh` | Regenerates `CLAUDE.md`, `GEMINI.md` and the Gemini/Copilot agents |
 | `.githooks/pre-commit` | Runs the sync script on every commit |
+| `scripts/install-hooks.sh` | Enables `.githooks` without overwriting an existing hook setup |
 | `.github/workflows/agent-files.yml` | CI check that all generated files are in sync |
 
 ## How to Use
 
 1. Copy all files into the root of your new repository.
-2. Enable the git hooks once per clone: `git config core.hooksPath .githooks`. Claude Code does this automatically at session start.
+2. Enable the git hooks once per clone: `scripts/install-hooks.sh`. Claude Code runs it at session start. It never overwrites an existing `core.hooksPath` or custom hooks; if you have them, it tells you to call `.githooks/pre-commit` from your own pre-commit hook.
 3. Replace the `<!-- CUSTOMIZE -->` section in `AGENTS.md` with a description of your project, then commit — `CLAUDE.md` and `GEMINI.md` are regenerated.
 4. Add your permissions and preferences to `.claude/settings.json`.
 5. Delete this README or replace it with your project README.

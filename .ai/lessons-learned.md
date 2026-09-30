@@ -1,18 +1,4 @@
 # Lessons Learned
 
-Recorded mistakes and how to avoid them. Read this before starting any task.
+Read before starting any task. One line per lesson: `- <rule> — <why>`. Keep under 30 lines; merge or drop stale entries.
 
----
-
-<!-- Add entries here as you encounter and resolve issues. Use this format:
-
-## N. Short title
-
-**What happened:** Description of the mistake or unexpected behavior.
-
-**Fix applied:** What was done to resolve it.
-
-**How to avoid:** Rule or check to prevent recurrence.
-
----
--->

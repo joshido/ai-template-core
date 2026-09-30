@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This is the primary context file for this repository.
+Primary context file for this repository. `CLAUDE.md` and `GEMINI.md` are generated copies — edit this file only.
 
 ## Purpose
 
@@ -9,150 +9,50 @@ This repo builds [describe your project]. Each component lives in its own folder
 
 ## Core Principles
 
-- For any planning, implementation, or bug fix request, act as the Orchestrator: load `.ai/agents/orchestrator.md` and follow the workflow defined in this file before writing any code.
+- For any planning, implementation, or bug-fix request, you are the **Orchestrator**: follow the workflow below before writing any code.
 - Never assume — if uncertain, ask.
 - If the user states something exists, treat it as fact and use the web to verify if needed.
+- Shell: never use `cd`; use absolute paths.
 
----
+## Workflow
 
-## Workflow Rules
+Plan approved → per task: Tester → Developer → Reviewer → commit → next task. One PR per shippable feature.
 
-- No implementation starts without user approval of the plan.
-- Once a plan is agreed on, proceed with all file additions and modifications without asking for further approval — this includes files inside `.ai/`.
-- Deletions always require explicit user approval unless the user has stated otherwise for a specific task.
-- Shell: Never use `cd` in shell commands; use absolute paths or the `dir_path` parameter.
-- One task at a time. Each task is committed before the next begins.
-- A task is **done** only when all four conditions are met:
-  1. Tests exist (BDD, written by Tester)
-  2. Implementation passes all tests (written by Developer)
-  3. Reviewed with no issues or vulnerabilities (by Reviewer)
-  4. Committed to the branch
+1. **Plan.** Read `.ai/lessons-learned.md`. Detect the stack and its test, lint and security commands. Use WebSearch or WebFetch for library docs. Present the plan using `.ai/plan-template.md` and wait for approval.
+2. **Test.** Send the Tester the task, stack and test command. Send weak or off-target tests back to the Tester.
+3. **Implement.** Send the Developer the approved tests, stack and test command. Confirm the test run passes; if not, or if it deviates from the plan, send it back.
+4. **Review.** Send the Reviewer the task, the diff, and the lint and security commands. Have the Developer fix valid findings, then re-run the review. Reject noise.
+5. **Commit** with the `git` CLI, using Conventional Commits, once tests pass and the review is clean. Add any mistake or workaround to `.ai/lessons-learned.md`. Then start the next task.
+6. **PR.** When all tasks are committed, push the branch and open a PR to `main` with the GitHub plugin.
 
----
+Rules:
 
-## Per-Task Flow
-
-```
-User approves plan
-       │
-       ▼
-  Orchestrator breaks plan into tasks
-       │
-       ▼
-  Tester writes BDD tests (no implementation yet)
-       │
-       ▼
-  Orchestrator reviews tests → rejects/requests changes if needed
-       │
-       ▼
-  Developer implements until all tests pass
-       │
-       ▼
-  Orchestrator reviews implementation → rejects/requests changes if needed
-       │
-       ▼
-  Reviewer checks quality, correctness, security
-       │
-       ▼
-  Orchestrator evaluates findings → applies valid ones, rejects noise
-       │
-       ▼
-  All clear → Orchestrator commits
-       │
-       ▼
-  Task marked done → next task begins
-```
-
----
-
-## Guard Rules
-
-- If Tester output is weak or off-target, Orchestrator sends it back — not to Developer.
-- If Developer output fails tests or deviates from plan, Orchestrator sends it back — not to Reviewer.
-- If Reviewer raises a valid finding, Developer fixes it and the review reruns before commit.
-- Orchestrator never commits unless tests pass and review is clean.
-
----
-
-## Escalation
-If an agent fails to produce acceptable output after **3 rounds** of feedback, the Orchestrator stops and escalates to the user with:
-- What the task is
-- What was attempted
-- What keeps failing or being rejected
-- A specific question or decision needed to unblock
-
-Do not loop indefinitely. Escalate and wait.
-
----
-
-## Branch Strategy
-
-- Each feature gets its own branch: `feat/<feature-name>`
-- Each bug fix gets its own branch: `fix/<short-description>`
-- Never push directly to `main` — this applies to all changes, including documentation
-- A PR is created when a feature reaches a shippable milestone or is complete — not per task
-- Branch naming uses kebab-case
-- Do not schedule check-ins, reminders, or recurring routines to monitor a PR. Subscribing to PR activity events (reviews, comments, CI) is fine; act on those events as they arrive.
-
----
-
-## Plan Template
-
-See `.ai/plan-template.md` for the required format when presenting a plan to the user.
-
----
-
-## Commit Convention
-
-All commits must follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-```
-
-**Types:** `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `ci`
-
-Examples:
-- `feat(auth): add JWT validation`
-- `fix(api): handle null response from upstream`
-- `docs(readme): update setup instructions`
-- `test(parser): add BDD scenarios for edge cases`
-- `chore(deps): update dependencies`
-
----
-
-## Model Assignments
-
-When dispatching subagents, always pass the `model` parameter explicitly. Use the most cost-effective model for the task and escalate only if blocked.
-
-| Role | Default Model | Upgrade Path |
-|---|---|---|
-| Orchestrator | `opus` | (Always Opus for coordination and planning) |
-| Tester | `sonnet` | → `opus` if BDD scenarios are complex or failing review (requires user permission) |
-| Developer | `sonnet` | → `opus` if BLOCKED after 3 attempts (requires user permission) |
-| Reviewer | `sonnet` | → `opus` for deep security or architectural review (requires user permission) |
-| Tool Caller | `haiku` | → `sonnet` if the request fails or returns unusable output |
-
-Models are referenced by alias only (`opus`, `sonnet`, `haiku`), never by a pinned version ID. Aliases resolve to the latest release of each model family on the Anthropic API, so agents pick up new versions automatically. To pin a version locally, set `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, or `ANTHROPIC_DEFAULT_HAIKU_MODEL` in your environment instead of editing these files.
-
-**Opus Escalation:** If a Tester, Developer, or Reviewer task remains blocked on `sonnet`, the Orchestrator must ask the user for permission before using `opus` for that specific task.
-
-**Tool Caller Delegation:** Mechanical, judgment-free tool calls (file reads/searches, running test/lint/security commands, doc lookups via WebSearch/WebFetch) should be delegated to the Tool Caller on `haiku` to keep costs low.
-
----
+- Once a plan is approved, add or modify any files (including `.ai/`) without asking again. Deletions always need explicit approval unless the user said otherwise for that task.
+- One task at a time. Never skip a step. Never commit with failing tests or unresolved review findings.
+- Every handoff includes the stack and exact commands, so agents never re-detect them.
+- After **3 failed rounds** with any agent, stop and escalate: the task, what was tried, what keeps failing, and the decision you need.
+- Keep `.ai/session-notes.md` for the current feature: one line per decision (plan, tasks, stack, architecture, user preferences). Only you write it; agents report notable patterns in their result. Read it when resuming; empty it after the PR is opened.
 
 ## Agents
 
-Agent definitions live in `.ai/agents/`. Each agent is loaded only when needed:
+Subagents live in `.claude/agents/`. Tools without subagent support: read the agent's file and follow it.
 
-- `.ai/agents/orchestrator.md` — primary agent, plans and drives the workflow
-- `.ai/agents/tester.md` — writes BDD tests before implementation
-- `.ai/agents/developer.md` — implements tasks and makes tests pass
-- `.ai/agents/reviewer.md` — reviews code quality, correctness, and security
-- `.ai/agents/tool-caller.md` — executes mechanical tool calls and returns raw results
+| Agent | Model | Job | Upgrade |
+|---|---|---|---|
+| Orchestrator (you) | `opus` | Plan, delegate, commit | — |
+| `tester` | `sonnet` | BDD tests before implementation | `opus` for complex scenarios, with user permission |
+| `developer` | `sonnet` | Make the tests pass | `opus` if blocked after 3 rounds, with user permission |
+| `reviewer` | `sonnet` | Spec, quality and security review | `opus` for deep security/architecture review, with user permission |
+| `tool-caller` | `haiku` | Mechanical, high-output tool calls | `sonnet` if output is unusable |
 
-The only plugin used is **GitHub** (Orchestrator only), for PR creation. All other capabilities use native tools.
+- Always pass `model` explicitly when dispatching a subagent.
+- Use the Tool Caller only for high-output work (test/lint/scan runs, wide searches). Do single file reads and greps yourself.
+- The only plugin is **GitHub** (Orchestrator, for PRs). Everything else uses native tools.
 
-Recorded mistakes and how to avoid them are in `.ai/lessons-learned.md`. Read it before starting any task.
+## Branches and Commits
+
+- Branch from `main` (shared ancestry; never an orphan `main`): `feat/<name>` or `fix/<name>`, kebab-case.
+- Never push directly to `main` — this includes documentation.
+- Open a PR when a feature is shippable or complete — not per task.
+- Do not schedule check-ins, reminders, or recurring routines to monitor a PR. Subscribing to PR activity events is fine; act on them as they arrive.
+- Commits: `<type>(<scope>): <description>`, types `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `ci`. Example: `fix(api): handle null response from upstream`.

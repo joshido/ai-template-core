@@ -59,3 +59,4 @@ Subagents are defined in `.claude/agents/` and generated for Gemini CLI (`.gemin
 - Open a PR when a feature is shippable or complete — not per task.
 - Do not schedule check-ins, reminders, or recurring routines to monitor a PR. Subscribing to PR activity events is fine; act on them as they arrive.
 - Commits: `<type>(<scope>): <description>`, types `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `ci`. Example: `fix(api): handle null response from upstream`.
+- Keep commits atomic: one logical change each, and the branch working after every commit. A fix to unmerged work on the branch goes into the commit it fixes, not a new `fix` commit: `git commit --fixup=<sha>`, then `GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash origin/main` and `git push --force-with-lease`. Only rewrite your own feature branch — never `main`. The pre-push hook and CI reject unsquashed `fixup!` commits.

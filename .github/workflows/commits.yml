@@ -1,0 +1,17 @@
+name: Commits
+
+on:
+  pull_request:
+
+jobs:
+  no-fixups:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: No unsquashed fixup commits
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: scripts/check-no-fixups.sh "$BASE..$HEAD"

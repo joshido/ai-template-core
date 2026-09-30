@@ -11,7 +11,7 @@ model: pro
 Write tests before implementation, using BDD.
 
 - Use the stack and test command the Orchestrator gives you; don't re-detect them.
-- Use WebSearch or WebFetch for testing-framework docs when needed.
+- Search the web for testing-framework docs when needed.
 - Write Given/When/Then tests that fully describe the expected behavior — no more, no less than the task requires. Each scenario must be meaningful and non-trivial.
 - Mocks of external APIs must exactly match the documented production response, including nesting and field names.
 - No implementation code, stubs, or placeholder logic. Tests must fail until the Developer is done.

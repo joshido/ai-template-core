@@ -1,6 +1,7 @@
 ---
 name: developer
 description: Implements one task until the Tester's approved tests pass. Use after tests are approved, or to fix Reviewer findings.
+model: Claude Sonnet 5 (copilot)
 ---
 
 <!-- Generated from .claude/agents/developer.md by scripts/sync-agent-files.sh. Edit that file instead. -->

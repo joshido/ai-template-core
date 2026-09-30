@@ -1,6 +1,7 @@
 ---
 name: developer
 description: Implements one task until the Tester's approved tests pass. Use after tests are approved, or to fix Reviewer findings.
+model: pro
 ---
 
 <!-- Generated from .claude/agents/developer.md by scripts/sync-agent-files.sh. Edit that file instead. -->

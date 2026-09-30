@@ -1,6 +1,7 @@
 ---
 name: reviewer
 description: Reviews one task's implementation for spec compliance, correctness, quality and security, and reports findings without editing code.
+model: Claude Sonnet 5 (copilot)
 ---
 
 <!-- Generated from .claude/agents/reviewer.md by scripts/sync-agent-files.sh. Edit that file instead. -->

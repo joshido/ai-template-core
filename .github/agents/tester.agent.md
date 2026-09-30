@@ -1,6 +1,7 @@
 ---
 name: tester
 description: Writes BDD tests (Given/When/Then) for one task before implementation. Use after a plan is approved, before the developer.
+model: Claude Sonnet 5 (copilot)
 ---
 
 <!-- Generated from .claude/agents/tester.md by scripts/sync-agent-files.sh. Edit that file instead. -->

@@ -2,6 +2,8 @@
 name: developer
 description: Implements one task until the Tester's approved tests pass. Use after tests are approved, or to fix Reviewer findings.
 model: sonnet
+gemini-model: pro
+copilot-model: Claude Sonnet 5 (copilot)
 ---
 
 # Developer

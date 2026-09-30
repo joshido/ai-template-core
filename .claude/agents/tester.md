@@ -2,6 +2,8 @@
 name: tester
 description: Writes BDD tests (Given/When/Then) for one task before implementation. Use after a plan is approved, before the developer.
 model: sonnet
+gemini-model: pro
+copilot-model: Claude Sonnet 5 (copilot)
 ---
 
 # Tester

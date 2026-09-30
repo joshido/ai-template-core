@@ -2,6 +2,8 @@
 name: reviewer
 description: Reviews one task's implementation for spec compliance, correctness, quality and security, and reports findings without editing code.
 model: sonnet
+gemini-model: pro
+copilot-model: Claude Sonnet 5 (copilot)
 ---
 
 # Reviewer

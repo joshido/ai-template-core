@@ -2,6 +2,8 @@
 name: tool-caller
 description: Runs well-defined, high-output mechanical tool calls (test, lint and security runs, wide searches, doc lookups) and returns a compact result. No decisions.
 model: haiku
+gemini-model: flash
+copilot-model: Claude Haiku 4.5 (copilot)
 tools: Bash, Read, Glob, Grep, WebSearch, WebFetch
 ---
 

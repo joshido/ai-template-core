@@ -118,9 +118,10 @@ same() {
   if [ -e "$1" ] || [ -e "$2" ]; then cmp -s "$1" "$2"; fi
 }
 
-# True if a generated file has an edit that regenerating would throw away:
-# an unstaged edit (working tree differs from both the index and the new
-# output) or a staged one (index differs from both HEAD and the new output).
+# True if a generated file has an edit that regenerating or removing it would
+# throw away: an unstaged edit (working tree differs from both the index and
+# the new output) or a staged one (index differs from both HEAD and the new
+# output). A missing new output means the file is stale and will be removed.
 hand_edited() {
   blob ":$1" "$scratch/index"
   blob "HEAD:$1" "$scratch/head"
@@ -130,14 +131,45 @@ hand_edited() {
   [ -e "$scratch/index" ] && ! same "$scratch/index" "$out/$1" && ! same "$scratch/index" "$scratch/head"
 }
 
+# True if a file carries the generated-file marker (working tree copy, or the
+# index copy when the working tree copy is gone).
+has_marker() {
+  if [ -e "$root/$1" ]; then
+    grep -q "^<!-- Generated from .* by $script" "$root/$1"
+  else
+    git -C "$root" show ":$1" 2>/dev/null | grep -q "^<!-- Generated from .* by $script"
+  fi
+}
+
 generated=$(cd "$out" && find . -type f | sed 's|^\./||' | sort)
+
+# Generated agents whose source is gone. Hand-written agents (without the
+# marker) are left alone. With --staged, agents only in the index count too.
+stale=$(
+  {
+    for f in "$root"/.gemini/agents/*.md "$root"/.github/agents/*.agent.md; do
+      if [ -e "$f" ]; then echo "${f#"$root"/}"; fi
+    done
+    if [ "$mode" = --staged ]; then
+      git -C "$root" ls-files -- '.gemini/agents/*.md' '.github/agents/*.agent.md'
+    fi
+  } | sort -u | while read -r f; do
+    if [ ! -e "$out/$f" ] && has_marker "$f"; then echo "$f"; fi
+  done
+)
 
 if [ "$mode" != --check ]; then
   edited=0
-  for f in $generated; do
+  for f in $generated $stale; do
     if hand_edited "$f"; then
-      echo "$f is generated from $(source_of "$f") and was edited by hand." >&2
-      echo "  Move the change to $(source_of "$f"), then undo it here: git checkout HEAD -- $f" >&2
+      src=$(source_of "$f")
+      if [ -e "$out/$f" ]; then
+        echo "$f is generated from $src and was edited by hand." >&2
+        echo "  Move the change to $src, then undo it here: git checkout HEAD -- $f" >&2
+      else
+        echo "$f was generated from $src, which was removed, and has hand edits." >&2
+        echo "  Restore $src, or discard the edits: git checkout HEAD -- $f" >&2
+      fi
       edited=1
     fi
   done
@@ -146,35 +178,37 @@ fi
 
 status=0
 
-# Write or check each generated file.
+# Write or check each generated file. With --staged, also stage any file whose
+# index copy differs from the new output (even if the working tree is current).
 for f in $generated; do
-  cmp -s "$out/$f" "$root/$f" && continue
   if [ "$mode" = --check ]; then
-    echo "$f is out of date. Run $script" >&2
-    status=1
+    if ! cmp -s "$out/$f" "$root/$f"; then
+      echo "$f is out of date. Run $script" >&2
+      status=1
+    fi
     continue
   fi
-  mkdir -p "$(dirname "$root/$f")"
-  cp "$out/$f" "$root/$f"
-  echo "Updated $f"
-  if [ "$mode" = --staged ]; then git -C "$root" add -- "$f"; fi
+  if ! cmp -s "$out/$f" "$root/$f"; then
+    mkdir -p "$(dirname "$root/$f")"
+    cp "$out/$f" "$root/$f"
+    echo "Updated $f"
+  fi
+  if [ "$mode" = --staged ]; then
+    blob ":$f" "$scratch/index"
+    if ! cmp -s "$out/$f" "$scratch/index"; then git -C "$root" add -- "$f"; fi
+  fi
 done
 
-# Remove generated agents whose source is gone. Hand-written agents
-# (without the "Generated from" marker) are left alone.
-for f in "$root"/.gemini/agents/*.md "$root"/.github/agents/*.agent.md; do
-  [ -e "$f" ] || continue
-  rel=${f#"$root"/}
-  [ -e "$out/$rel" ] && continue
-  grep -q "^<!-- Generated from .* by $script" "$f" || continue
+# Remove stale generated agents.
+for f in $stale; do
   if [ "$mode" = --check ]; then
-    echo "$rel is stale (its source was removed). Run $script" >&2
+    echo "$f is stale (its source was removed). Run $script" >&2
     status=1
     continue
   fi
-  rm "$f"
-  echo "Removed $rel"
-  if [ "$mode" = --staged ]; then git -C "$root" rm -q --cached --ignore-unmatch -- "$rel"; fi
+  rm -f "$root/$f"
+  echo "Removed $f"
+  if [ "$mode" = --staged ]; then git -C "$root" rm -q --cached --ignore-unmatch -- "$f"; fi
 done
 
 exit $status
